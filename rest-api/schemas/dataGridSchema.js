@@ -29,7 +29,7 @@ module.exports = {
           name: { $ref: '#/definitions/translation' },
           values: {
             type: 'array',
-            items: { type: 'number' }
+            items: { type: 'string' }
           }
         },
         required: ['name', 'values']
