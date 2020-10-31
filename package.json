@@ -9,6 +9,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^7.12.0"
+    "@fundaciobit/express-middleware": "^1.7.3",
+    "@fundaciobit/express-redis-mongo": "^1.4.3",
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.12.0",
+    "express": "^4.17.1",
+    "mongodb": "^3.6.2",
+    "redis": "^3.0.2"
   }
 }
