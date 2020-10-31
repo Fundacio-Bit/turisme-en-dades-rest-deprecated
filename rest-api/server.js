@@ -42,7 +42,7 @@ const createApp = (mongoClient) => {
   // ------
   app.post('/login',
     validateJsonSchema({ schema: loginSchema, instanceToValidate: (req) => req.body }),
-    mongoFindOne({ mongoClient, db, usersCol, query: (req) => ({ username: req.body.username, password: req.body.password }), responseProperty: 'user' }),
+    mongoFindOne({ mongoClient, db, collection: usersCol, query: (req) => ({ username: req.body.username, password: req.body.password }), responseProperty: 'user' }),
     (req, res, next) => {
       const { user } = res.locals
       if (user) {
@@ -62,7 +62,7 @@ const createApp = (mongoClient) => {
   // -----------------
   app.post('/data-grids',
     validateJsonSchema({ schema: dataGridSchema, instanceToValidate: (req) => req.body }),
-    mongoInsertOne({ mongoClient, db, dataGridsCol, docToInsert: (req, res) => req.body }),
+    mongoInsertOne({ mongoClient, db, collection: dataGridsCol, docToInsert: (req, res) => req.body }),
     (req, res) => { res.status(200).json({ _id: res.locals.insertedId }) }
   )
 
@@ -79,7 +79,7 @@ const createApp = (mongoClient) => {
         next()  // Key not found, proceeding to search in MongoDB...
       }
     },
-    mongoFindOne({ mongoClient, db, dataGridsCol, query: (req) => ({ _id: new ObjectID(req.params.id) }) }),
+    mongoFindOne({ mongoClient, db, collection: dataGridsCol, query: (req) => ({ _id: new ObjectID(req.params.id) }) }),
     (req, res, next) => {
       if (res.locals.result) {
         next()
@@ -100,7 +100,7 @@ const createApp = (mongoClient) => {
 
   app.patch('/data-grids/:id',
     validateJsonSchema({ schema: dataGridSchemaNoRequired, instanceToValidate: (req) => req.body }),
-    mongoUpdateOne({ mongoClient, db, dataGridsCol, filter: (req) => ({ _id: new ObjectID(req.params.id) }), contentToUpdate: (req, res) => req.body }),
+    mongoUpdateOne({ mongoClient, db, collection: dataGridsCol, filter: (req) => ({ _id: new ObjectID(req.params.id) }), contentToUpdate: (req, res) => req.body }),
     redisDel({ client, key: (req) => `/data-grids/${req.params.id}` }),
     (req, res) => { res.status(200).send('Document successfully updated. Cache removed.') }
   )
@@ -108,7 +108,7 @@ const createApp = (mongoClient) => {
   // Delete data grid (removes cache after deleting)
   // ------------------------------------------------
   app.delete('/data-grids/:id',
-    mongoDeleteOne({ mongoClient, db, dataGridsCol, filter: (req) => ({ _id: new ObjectID(req.params.id) }) }),
+    mongoDeleteOne({ mongoClient, db, collection: dataGridsCol, filter: (req) => ({ _id: new ObjectID(req.params.id) }) }),
     redisDel({ client, key: (req) => `/data-grids/${req.params.id}` }),
     (req, res) => { res.status(200).send('Document successfully deleted. Cache removed.') }
   )
