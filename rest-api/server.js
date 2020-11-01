@@ -6,11 +6,12 @@ const redis = require('redis')
 const { MongoClient, ObjectID } = require('mongodb')
 const { validateJsonSchema, signJWT, verifyJWT } = require('@fundaciobit/express-middleware')
 const { redisGet, redisSet, redisDel, mongoFindOne, mongoInsertOne, mongoUpdateOne, mongoDeleteOne } = require('@fundaciobit/express-redis-mongo')
-const { mongodbUri, db, dataGridsCol, usersCol, serverPort } = require('./server.config')
+const { mongodbUri, db, collection, port } = require('./server.config')
 const dataGridSchema = require('./schemas/dataGridSchema')
 const loginSchema = require('./schemas/loginSchema')
 
 const secret = process.env.SECRET_KEY
+const isDevelopment = process.env.NODE_ENV === 'development'
 
 const REDIS_DB_INDEX = 0
 const client = redis.createClient({ db: REDIS_DB_INDEX })
@@ -30,7 +31,7 @@ MongoClient.connect(mongodbUri, { useUnifiedTopology: true, poolSize: 10 })
     createApp(client)
   })
   .catch(err => {
-    console.log(err.message)
+    console.log(err.toString())
     process.exit(1)
   })
 
@@ -38,11 +39,15 @@ const createApp = (mongoClient) => {
   const app = express()
   app.use(bodyParser.json())
 
+  app.get('/', (req, res) => {
+    res.status(200).json({ documentation: `https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/README.md` })
+  })
+
   // Login
   // ------
   app.post('/login',
     validateJsonSchema({ schema: loginSchema, instanceToValidate: (req) => req.body }),
-    mongoFindOne({ mongoClient, db, collection: usersCol, query: (req) => ({ username: req.body.username, password: req.body.password }), responseProperty: 'user' }),
+    mongoFindOne({ mongoClient, db, collection: 'users_col', query: (req) => ({ username: req.body.username, password: req.body.password }), responseProperty: 'user' }),
     (req, res, next) => {
       const { user } = res.locals
       if (user) {
@@ -62,24 +67,24 @@ const createApp = (mongoClient) => {
   // -----------------
   app.post('/data-grids',
     validateJsonSchema({ schema: dataGridSchema, instanceToValidate: (req) => req.body }),
-    mongoInsertOne({ mongoClient, db, collection: dataGridsCol, docToInsert: (req, res) => req.body }),
+    mongoInsertOne({ mongoClient, db, collection, docToInsert: (req, res) => req.body }),
     (req, res) => { res.status(200).json({ _id: res.locals.insertedId }) }
   )
 
   // Read data grid
   // ---------------
   app.get('/data-grids/:id',
-    redisGet({ client, key: (req) => `/data-grids/${req.params.id}`, parseResults: true }),  // Searching in Redis cache
+    redisGet({ client, key: (req) => `/data-grids/${req.params.id}`, parseResults: true }),
     (req, res, next) => {
       const { redisValue } = res.locals
       if (redisValue) {
-        console.log('Sending Redis cached result...')
+        if (isDevelopment) console.log('Sending cached result from Redis ...')
         res.status(200).json(redisValue)
       } else {
         next()  // Key not found, proceeding to search in MongoDB...
       }
     },
-    mongoFindOne({ mongoClient, db, collection: dataGridsCol, query: (req) => ({ _id: new ObjectID(req.params.id) }) }),
+    mongoFindOne({ mongoClient, db, collection, query: (req) => ({ _id: new ObjectID(req.params.id) }) }),
     (req, res, next) => {
       if (res.locals.result) {
         next()
@@ -89,7 +94,7 @@ const createApp = (mongoClient) => {
     },
     redisSet({ client, key: (req) => `/data-grids/${req.params.id}`, value: (req, res) => JSON.stringify(res.locals.result), expiration: 600 }),  // Caching results in Redis for 10 minutes
     (req, res) => {
-      console.log(' ...caching MongoDB result in Redis, sending result...')
+      if (isDevelopment) console.log(' ... inserted MongoDB result in Redis')
       res.status(200).json(res.locals.result)
     })
 
@@ -100,7 +105,7 @@ const createApp = (mongoClient) => {
 
   app.patch('/data-grids/:id',
     validateJsonSchema({ schema: dataGridSchemaNoRequired, instanceToValidate: (req) => req.body }),
-    mongoUpdateOne({ mongoClient, db, collection: dataGridsCol, filter: (req) => ({ _id: new ObjectID(req.params.id) }), contentToUpdate: (req, res) => req.body }),
+    mongoUpdateOne({ mongoClient, db, collection, filter: (req) => ({ _id: new ObjectID(req.params.id) }), contentToUpdate: (req, res) => req.body }),
     redisDel({ client, key: (req) => `/data-grids/${req.params.id}` }),
     (req, res) => { res.status(200).send('Document successfully updated. Cache removed.') }
   )
@@ -108,7 +113,7 @@ const createApp = (mongoClient) => {
   // Delete data grid (removes cache after deleting)
   // ------------------------------------------------
   app.delete('/data-grids/:id',
-    mongoDeleteOne({ mongoClient, db, collection: dataGridsCol, filter: (req) => ({ _id: new ObjectID(req.params.id) }) }),
+    mongoDeleteOne({ mongoClient, db, collection, filter: (req) => ({ _id: new ObjectID(req.params.id) }) }),
     redisDel({ client, key: (req) => `/data-grids/${req.params.id}` }),
     (req, res) => { res.status(200).send('Document successfully deleted. Cache removed.') }
   )
@@ -118,5 +123,5 @@ const createApp = (mongoClient) => {
     res.status(err.statusCode).send(err.toString())
   })
 
-  app.listen(serverPort, () => { console.log(`Server running on port ${serverPort}...`) })
+  app.listen(port, () => { console.log(`Server running on port ${port}...`) })
 }
