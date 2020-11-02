@@ -64,12 +64,14 @@ node server.js
 
 ### 4. Endpoints
 
-| method | path | description | schema to validate `req.body` | required authentication with JWT |
+| method | path | description | schema to validate `req.body` | required JWT (*) |
 |-|-|-|-|-|
 | GET | / | REST API documentation |||
 | POST | /login | User authentication |[loginSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/loginSchema.js)||
-| GET | /data-grids/summary | Read summary of data grids || Bearer token in `Authorization` header |
-| POST | /data-grids | Create data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js)| Bearer token in `Authorization` header |
-| GET | /data-grids/:id | Read data grid || Bearer token in `Authorization` header |
-| PATCH | /data-grids/:id | Update data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js) (without `required`)| Bearer token in `Authorization` header |
-| DELETE | /data-grids/:id | Delete data grid || Bearer token in `Authorization` header |
+| GET | /data-grids/summary | Read summary of data grids || Yes |
+| POST | /data-grids | Create data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js)| Yes |
+| GET | /data-grids/:id | Read data grid || Yes |
+| PATCH | /data-grids/:id | Update data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js) (without `required`)| Yes |
+| DELETE | /data-grids/:id | Delete data grid || Yes |
+
+(*) Bearer token in `Authorization` header
