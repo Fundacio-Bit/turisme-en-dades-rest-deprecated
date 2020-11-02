@@ -5,24 +5,16 @@ const bodyParser = require('body-parser')
 const redis = require('redis')
 const { MongoClient, ObjectID } = require('mongodb')
 const { validateJsonSchema, signJWT, verifyJWT } = require('@fundaciobit/express-middleware')
-const { redisGet, redisSet, redisDel, mongoFindOne, mongoInsertOne, mongoUpdateOne, mongoDeleteOne } = require('@fundaciobit/express-redis-mongo')
-const { mongodbUri, db, collection, port } = require('./server.config')
-const dataGridSchema = require('./schemas/dataGridSchema')
-const loginSchema = require('./schemas/loginSchema')
+const { redisGet, redisSet, redisDel, mongoFind, mongoFindOne, mongoInsertOne, mongoUpdateOne, mongoDeleteOne } = require('@fundaciobit/express-redis-mongo')
+const { mongodbUri, db, collection, expiration, port } = require('./server.config')
+const { dataGridSchema, loginSchema } = require('./schemas/')
+const { AuthenticationError } = require('./errors/')
 
 const secret = process.env.SECRET_KEY
 const isDevelopment = process.env.NODE_ENV === 'development'
 
 const REDIS_DB_INDEX = 0
 const client = redis.createClient({ db: REDIS_DB_INDEX })
-
-class AuthenticationError extends Error {
-  constructor(message) {
-    super(message)
-    this.name = 'AuthenticationError'
-    this.statusCode = 401
-  }
-}
 
 // Open MongoDB connection
 MongoClient.connect(mongodbUri, { useUnifiedTopology: true, poolSize: 10 })
@@ -47,7 +39,7 @@ const createApp = (mongoClient) => {
   // ------
   app.post('/login',
     validateJsonSchema({ schema: loginSchema, instanceToValidate: (req) => req.body }),
-    mongoFindOne({ mongoClient, db, collection: 'users_col', query: (req) => ({ username: req.body.username, password: req.body.password }), responseProperty: 'user' }),
+    mongoFindOne({ mongoClient, db, collection: 'admins_col', query: (req) => ({ username: req.body.username, password: req.body.password }), responseProperty: 'user' }),
     (req, res, next) => {
       const { user } = res.locals
       if (user) {
@@ -71,8 +63,28 @@ const createApp = (mongoClient) => {
     (req, res) => { res.status(200).json({ _id: res.locals.insertedId }) }
   )
 
-  // Read data grid
-  // ---------------
+  // Read summary of data grids
+  // ---------------------------
+  app.get('/data-grids/summary',
+    redisGet({ client, key: (req) => `/data-grids/summary`, parseResults: true }),
+    (req, res, next) => {
+      const { redisValue } = res.locals
+      if (redisValue) {
+        if (isDevelopment) console.log('Sending cached results from Redis ...')
+        res.status(200).json(redisValue)
+      } else {
+        next()  // Key not found, proceeding to search in MongoDB...
+      }
+    },
+    mongoFind({ mongoClient, db, collection, query: (req) => ({}), projection: { title: 1 } }),
+    redisSet({ client, key: (req) => `/data-grids/summary`, value: (req, res) => JSON.stringify(res.locals.results), expiration }),
+    (req, res) => {
+      if (isDevelopment) console.log(' ... inserted MongoDB results in Redis')
+      res.status(200).json(res.locals.results)
+    })
+
+  // Read data grid by id
+  // ---------------------
   app.get('/data-grids/:id',
     redisGet({ client, key: (req) => `/data-grids/${req.params.id}`, parseResults: true }),
     (req, res, next) => {
@@ -92,7 +104,7 @@ const createApp = (mongoClient) => {
         res.status(404).send('Document not found')
       }
     },
-    redisSet({ client, key: (req) => `/data-grids/${req.params.id}`, value: (req, res) => JSON.stringify(res.locals.result), expiration: 600 }),  // Caching results in Redis for 10 minutes
+    redisSet({ client, key: (req) => `/data-grids/${req.params.id}`, value: (req, res) => JSON.stringify(res.locals.result), expiration }),
     (req, res) => {
       if (isDevelopment) console.log(' ... inserted MongoDB result in Redis')
       res.status(200).json(res.locals.result)
