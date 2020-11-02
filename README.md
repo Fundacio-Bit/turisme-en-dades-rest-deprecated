@@ -67,7 +67,7 @@ node server.js
 | method | path | description | schema to validate `req.body` | required JWT (*) |
 |-|-|-|-|-|
 | GET | / | REST API documentation |||
-| POST | /login | User authentication |[loginSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/loginSchema.js)||
+| POST | /login | User authentication to generate a JWT |[loginSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/loginSchema.js)||
 | GET | /data-grids/summary | Read summary of data grids || Yes |
 | POST | /data-grids | Create data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js)| Yes |
 | GET | /data-grids/:id | Read data grid || Yes |
