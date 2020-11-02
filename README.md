@@ -53,7 +53,7 @@ Create a collection in MongoDB named `admins_col` (in the previously created dat
 }
 ```
 
-This users are required to invoke the login endpoint in order to generate a signed JSON Web Token. The token must be passed to CRUD and summary endpoints invocation as a bearer token in authorization header, in order to authenticate the user.
+This users are required to invoke the login endpoint in order to generate a signed JSON Web Token. Tokens must be passed in endpoint invocations, as a bearer token in authorization header, in order to authenticate users.
 
 ### 3. Run
 
@@ -64,12 +64,12 @@ node server.js
 
 ### 4. Endpoints
 
-| method | path | description | schema to validate `req.body` |
-|-|-|-|-|
-| GET | / | REST API documentation ||
-| POST | /login | User authentication |[loginSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/loginSchema.js)|
-| GET | /data-grids/summary | Read summary of data grids ||
-| POST | /data-grids | Create data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js)|
-| GET | /data-grids/:id | Read data grid ||
-| PATCH | /data-grids/:id | Update data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js) (without `required`)|
-| DELETE | /data-grids/:id | Delete data grid ||
+| method | path | description | schema to validate `req.body` | required authentication with JWT |
+|-|-|-|-|-|
+| GET | / | REST API documentation |||
+| POST | /login | User authentication |[loginSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/loginSchema.js)||
+| GET | /data-grids/summary | Read summary of data grids || Bearer token in `Authorization` header |
+| POST | /data-grids | Create data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js)| Bearer token in `Authorization` header |
+| GET | /data-grids/:id | Read data grid || Bearer token in `Authorization` header |
+| PATCH | /data-grids/:id | Update data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js) (without `required`)| Bearer token in `Authorization` header |
+| DELETE | /data-grids/:id | Delete data grid || Bearer token in `Authorization` header |
