@@ -58,8 +58,7 @@ This users are required to invoke the login endpoint in order to generate a sign
 ### 3. Run
 
 ```bash
-cd rest-api
-node server.js
+node ./rest-api/server.js
 ```
 
 ### 4. Endpoints
