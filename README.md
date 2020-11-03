@@ -60,7 +60,8 @@ Create a collection in MongoDB named `admins_col` (in the previously created dat
 ```js
 {
     "username" : "<username>",
-    "password" : "<password>"
+    "password" : "<password>",
+    "isAdmin": [true|false]
 }
 ```
 
