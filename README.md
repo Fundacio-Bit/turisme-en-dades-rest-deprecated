@@ -73,4 +73,18 @@ node ./rest-api/server.js
 | PATCH | /data-grids/:id | Update data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js) (without `required`)| Yes |
 | DELETE | /data-grids/:id | Delete data grid || Yes |
 
-(*) Bearer token in `Authorization` header
+(*) As a Bearer token in `Authorization` header
+
+### 5. Usage
+
+To generate a JWT token you can use `curl` and pass the user credentials to the login endpoint:
+
+```bash
+curl -X POST -d "{\"username\":\"...\",\"password\":\"...\"}" -H "Content-Type: application/json" http://localhost:3000/login
+```
+
+To invoque CRUD endpoints you can use the generated JWT and pass it as a Bearer token in an authorization header:
+
+```bash
+curl -H "Authorization: Bearer <token>" http://localhost:3000/data-grids/summary
+```

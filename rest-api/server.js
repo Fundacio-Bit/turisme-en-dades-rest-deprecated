@@ -6,15 +6,15 @@ const redis = require('redis')
 const { MongoClient, ObjectID } = require('mongodb')
 const { validateJsonSchema, signJWT, verifyJWT } = require('@fundaciobit/express-middleware')
 const { redisGet, redisSet, redisDel, mongoFind, mongoFindOne, mongoInsertOne, mongoUpdateOne, mongoDeleteOne } = require('@fundaciobit/express-redis-mongo')
-const { mongodbUri, db, collection, expiration, port } = require('./server.config')
+const { mongodbUri, db, collection, redisHost, redisDBindex, expiration, port } = require('./server.config')
 const { dataGridSchema, loginSchema } = require('./schemas/')
 const { AuthenticationError } = require('./errors/')
 
 const secret = process.env.SECRET_KEY
 const isDevelopment = process.env.NODE_ENV === 'development'
 
-const REDIS_DB_INDEX = 0
-const client = redis.createClient({ db: REDIS_DB_INDEX })
+// Open Redis connection
+const client = redis.createClient({ host: redisHost, db: redisDBindex })
 
 // Open MongoDB connection
 MongoClient.connect(mongodbUri, { useUnifiedTopology: true, poolSize: 10 })
