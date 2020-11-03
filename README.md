@@ -26,25 +26,36 @@ https://docs.mongodb.com/manual/installation/
 
 #### Environment variables
 
-Edit the file `.env.example` to define the `SECRET_KEY` and `NODE_ENV` variables and rename it to `.env`. `SECRET_KEY` is a string used to sign/verify in the authentication process. `NODE_ENV` is used to indicate the execution mode, `development` or `production`.
+Edit the file `.env.example` to define the environment variables and rename it to `.env`:
+
+| environment variable | description |
+|-|-|
+| `SECRET_KEY` | Secret key to sign/verify JWT's in the authentication process |
+| `NODE_ENV` | Execution mode. Allowed values: `development`, `production` |
+| `RUNNING_IN_DOCKER` | To indicate Docker execution in a container. Allowed values: `true`, `false` |
 
 #### Configure the file `server.config.js`
 
-Edit the file to add MongoDB and server properties, and Redis caches expiration time:
+Edit the file to add MongoDB, Redis and REST server properties:
 
 ```js
-module.exports = {
-  mongodbUri: 'mongodb://127.0.0.1:27017',
-  db: 'turisme_en_dades_db',
-  collection: 'data_grids_col',
-  expiration: 600,  // Number of seconds of expiraton time for Redis caches.
-  port: 3000
-}
+// Mongo properties
+mongodbUri: process.env.RUNNING_IN_DOCKER === 'true' ? 'mongodb://host.docker.internal:27017' : 'mongodb://127.0.0.1:27017',
+db: 'turisme_en_dades_db',
+collection: 'data_grids_col',
+
+// Redis properties
+redisHost: process.env.RUNNING_IN_DOCKER === 'true' ? 'host.docker.internal' : '127.0.0.1',
+redisDBindex: 0,
+expiration: 600,  // Number of seconds of expiraton time for Redis caches
+
+// REST server properties
+port: 3000
 ```
 
 #### Create a collection of admin users in MongoDB
 
-Create a collection in MongoDB named `admins_col` (in the previously created database), and add a user's entry with the following format:
+Create a collection in MongoDB named `admins_col` (in the previously created database), and insert a doc in the collection with the following format:
 
 ```js
 {

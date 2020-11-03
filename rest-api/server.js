@@ -43,27 +43,34 @@ const createApp = (mongoClient) => {
     (req, res, next) => {
       const { user } = res.locals
       if (user) {
-        req.user = { username: user.username }
+        req.authenticatedUser = { username: user.username }
+        if (user.isAdmin) req.authenticatedUser.isAdmin = user.isAdmin
         next()
       } else {
         throw new AuthenticationError(`Invalid credentials for user: ${req.body.username}`)
       }
     },
-    signJWT({ payload: (req) => ({ username: req.user.username }), secret, signOptions: { expiresIn: '24h' } }),
+    signJWT({ payload: (req) => ({ ...req.authenticatedUser }), secret, signOptions: { expiresIn: '24h' } }),
     (req, res) => { res.status(200).json({ token: req.token }) }
   )
 
   app.use(verifyJWT({ secret }))
 
-  // Create data grid
+  // --- CRUD endpoints ---
+
+  // CREATE data grid
   // -----------------
   app.post('/data-grids',
+    (req, res, next) => {
+      if (!req.tokenPayload.isAdmin) throw new AuthenticationError(`Only admin users can execute this operation`)
+      next()
+    },
     validateJsonSchema({ schema: dataGridSchema, instanceToValidate: (req) => req.body }),
     mongoInsertOne({ mongoClient, db, collection, docToInsert: (req, res) => req.body }),
     (req, res) => { res.status(200).json({ _id: res.locals.insertedId }) }
   )
 
-  // Read summary of data grids
+  // READ summary of data grids
   // ---------------------------
   app.get('/data-grids/summary',
     redisGet({ client, key: (req) => `/data-grids/summary`, parseResults: true }),
@@ -83,7 +90,7 @@ const createApp = (mongoClient) => {
       res.status(200).json(res.locals.results)
     })
 
-  // Read data grid by id
+  // READ data grid BY id
   // ---------------------
   app.get('/data-grids/:id',
     redisGet({ client, key: (req) => `/data-grids/${req.params.id}`, parseResults: true }),
@@ -110,21 +117,29 @@ const createApp = (mongoClient) => {
       res.status(200).json(res.locals.result)
     })
 
-  // Update data grid (removes cache after updating)
-  // ------------------------------------------------
+  // UPDATE data grid
+  // -----------------
   const dataGridSchemaNoRequired = { ...dataGridSchema }
-  delete dataGridSchemaNoRequired.required  // Deleted the 'required' field of the JSON schema to support validation of a subset of fields
+  delete dataGridSchemaNoRequired.required  // Delete the 'required' field of the JSON schema to support validation of a subset of fields
 
   app.patch('/data-grids/:id',
+    (req, res, next) => {
+      if (!req.tokenPayload.isAdmin) throw new AuthenticationError(`Only admin users can execute this operation`)
+      next()
+    },
     validateJsonSchema({ schema: dataGridSchemaNoRequired, instanceToValidate: (req) => req.body }),
     mongoUpdateOne({ mongoClient, db, collection, filter: (req) => ({ _id: new ObjectID(req.params.id) }), contentToUpdate: (req, res) => req.body }),
     redisDel({ client, key: (req) => `/data-grids/${req.params.id}` }),
     (req, res) => { res.status(200).send('Document successfully updated. Cache removed.') }
   )
 
-  // Delete data grid (removes cache after deleting)
-  // ------------------------------------------------
+  // DELETE data grid
+  // -----------------
   app.delete('/data-grids/:id',
+    (req, res, next) => {
+      if (!req.tokenPayload.isAdmin) throw new AuthenticationError(`Only admin users can execute this operation`)
+      next()
+    },
     mongoDeleteOne({ mongoClient, db, collection, filter: (req) => ({ _id: new ObjectID(req.params.id) }) }),
     redisDel({ client, key: (req) => `/data-grids/${req.params.id}` }),
     (req, res) => { res.status(200).send('Document successfully deleted. Cache removed.') }
