@@ -65,7 +65,7 @@ Create a collection in MongoDB named `users_col` (in the previously created data
 }
 ```
 
-This users are required to invoke the login endpoint in order to generate a signed JSON Web Token. Tokens must be passed in endpoint invocations, as a bearer token in authorization header, in order to authenticate users.
+Users are authenticated through the login endpoint in order to generate a signed JSON Web Token. JWT tokens will be passed in endpoint invocations in the authorization header.
 
 ### 3. Run
 
