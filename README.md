@@ -53,9 +53,9 @@ expiration: 600,  // Number of seconds of expiraton time for Redis caches
 port: 3000
 ```
 
-#### Create a collection of admin users in MongoDB
+#### Create a collection of users in MongoDB
 
-Create a collection in MongoDB named `admins_col` (in the previously created database), and insert a doc in the collection with the following format:
+Create a collection in MongoDB named `users_col` (in the previously created database), and insert a doc in the collection with the following format:
 
 ```js
 {

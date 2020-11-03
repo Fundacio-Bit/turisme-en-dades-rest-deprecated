@@ -39,7 +39,7 @@ const createApp = (mongoClient) => {
   // ------
   app.post('/login',
     validateJsonSchema({ schema: loginSchema, instanceToValidate: (req) => req.body }),
-    mongoFindOne({ mongoClient, db, collection: 'admins_col', query: (req) => ({ username: req.body.username, password: req.body.password }), responseProperty: 'user' }),
+    mongoFindOne({ mongoClient, db, collection: 'users_col', query: (req) => ({ username: req.body.username, password: req.body.password }), responseProperty: 'user' }),
     (req, res, next) => {
       const { user } = res.locals
       if (user) {
