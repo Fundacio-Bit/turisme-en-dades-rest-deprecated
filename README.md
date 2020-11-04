@@ -65,7 +65,7 @@ Create a collection in MongoDB named `users_col` (in the previously created data
 }
 ```
 
-Users are authenticated through the login endpoint in order to generate a signed JSON Web Token. JWT tokens will be passed to endpoint invocations as bearer tokens in authorization headers ( `Authorization: Bearer AbCdEf123456` ).
+Users are authenticated through the login endpoint in order to generate a signed JSON Web Token. JWT tokens will be passed to endpoint invocations as bearer tokens in authorization headers.
 
 ### 3. Run
 
@@ -82,10 +82,10 @@ node ./rest-api/server.js
 | GET | /data-grids/summary | Read summary of data grids || Yes |
 | POST | /data-grids | Create data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js)| Yes |
 | GET | /data-grids/:id | Read data grid || Yes |
-| PATCH | /data-grids/:id | Update data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js) (without `required`)| Yes |
+| PATCH | /data-grids/:id | Update data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js) (without `required` field)| Yes |
 | DELETE | /data-grids/:id | Delete data grid || Yes |
 
-(*) As a Bearer token in `Authorization` header
+(*) Pass as a bearer token in an authorization header ( `Authorization: Bearer AbCdEf123456` ).
 
 ### 5. Usage
 
