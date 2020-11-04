@@ -55,7 +55,7 @@ port: 3000
 
 #### Create a collection of users in MongoDB
 
-Create a collection in MongoDB named `users_col` (in the previously created database), and insert a doc in the collection with the following format:
+Create a collection in MongoDB named `users_col` (in the previously specified database in `server.config.js`), and insert a doc in the collection with the following format:
 
 ```js
 {
