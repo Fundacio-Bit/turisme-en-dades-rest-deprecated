@@ -65,7 +65,7 @@ Create a collection in MongoDB named `users_col` (in the previously created data
 }
 ```
 
-Users are authenticated through the login endpoint in order to generate a signed JSON Web Token. JWT tokens will be passed to endpoint invocations with authorization headers as bearer tokens ( `Authorization: Bearer AbCdEf123456` ).
+Users are authenticated through the login endpoint in order to generate a signed JSON Web Token. JWT tokens will be passed to endpoint invocations as bearer tokens in authorization headers ( `Authorization: Bearer AbCdEf123456` ).
 
 ### 3. Run
 
