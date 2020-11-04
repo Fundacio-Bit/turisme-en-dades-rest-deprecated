@@ -65,7 +65,7 @@ Create a collection in MongoDB named `users_col` (in the previously created data
 }
 ```
 
-Users are authenticated through the login endpoint in order to generate a signed JSON Web Token. JWT tokens will be passed in endpoint invocations in the authorization header.
+Users are authenticated through the login endpoint in order to generate a signed JSON Web Token. JWT tokens will be passed to endpoint invocations with authorization headers as bearer tokens ( `Authorization: Bearer AbCdEf123456` ).
 
 ### 3. Run
 
@@ -95,8 +95,24 @@ To generate a JWT token you can use `curl` and pass the user credentials to the 
 curl -X POST -d "{\"username\":\"...\",\"password\":\"...\"}" -H "Content-Type: application/json" http://localhost:3000/login
 ```
 
-To invoque CRUD endpoints you can use the generated JWT and pass it as a Bearer token in an authorization header:
+To invoke CRUD endpoints you can use the generated JWT and pass it as a Bearer token in an authorization header:
 
 ```bash
 curl -H "Authorization: Bearer <token>" http://localhost:3000/data-grids/summary
 ```
+
+### 6. How to build a Docker image
+
+To build a Docker image of the REST server, execute the following command:
+
+```bash
+docker build -t <image_name> .
+```
+
+To run the image in a container:
+
+```bash
+docker run -d -p <public_port>:<private_port> <image_name>
+```
+
+Where the private port must be the same as the one defined in the `server.config.js` properties file.

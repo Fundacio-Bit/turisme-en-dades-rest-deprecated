@@ -2,6 +2,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const redis = require('redis')
 const { MongoClient, ObjectID } = require('mongodb')
 const { validateJsonSchema, signJWT, verifyJWT } = require('@fundaciobit/express-middleware')
@@ -30,6 +31,7 @@ MongoClient.connect(mongodbUri, { useUnifiedTopology: true, poolSize: 10 })
 const createApp = (mongoClient) => {
   const app = express()
   app.use(bodyParser.json())
+  app.use(cors())
 
   app.get('/', (req, res) => {
     res.status(200).json({ documentation: `https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/README.md` })

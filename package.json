@@ -12,6 +12,7 @@
     "@fundaciobit/express-middleware": "^1.7.3",
     "@fundaciobit/express-redis-mongo": "^1.4.3",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "eslint": "^7.12.0",
     "express": "^4.17.1",
