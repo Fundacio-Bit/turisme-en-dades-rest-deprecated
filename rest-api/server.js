@@ -69,6 +69,7 @@ const createApp = (mongoClient) => {
     },
     validateJsonSchema({ schema: dataGridSchema, instanceToValidate: (req) => req.body }),
     mongoInsertOne({ mongoClient, db, collection, docToInsert: (req, res) => req.body }),
+    redisDel({ client, key: (req) => `/data-grids/summary` }),
     (req, res) => { res.status(200).json({ _id: res.locals.insertedId }) }
   )
 
@@ -136,6 +137,7 @@ const createApp = (mongoClient) => {
     validateJsonSchema({ schema: dataGridSchemaNoRequired, instanceToValidate: (req) => req.body }),
     mongoUpdateOne({ mongoClient, db, collection, filter: (req) => ({ _id: new ObjectID(req.params.id) }), contentToUpdate: (req, res) => req.body }),
     redisDel({ client, key: (req) => `/data-grids/${req.params.id}` }),
+    redisDel({ client, key: (req) => `/data-grids/summary` }),
     (req, res) => { res.status(200).send('Document successfully updated. Cache removed.') }
   )
 
@@ -148,6 +150,7 @@ const createApp = (mongoClient) => {
     },
     mongoDeleteOne({ mongoClient, db, collection, filter: (req) => ({ _id: new ObjectID(req.params.id) }) }),
     redisDel({ client, key: (req) => `/data-grids/${req.params.id}` }),
+    redisDel({ client, key: (req) => `/data-grids/summary` }),
     (req, res) => { res.status(200).send('Document successfully deleted. Cache removed.') }
   )
 
