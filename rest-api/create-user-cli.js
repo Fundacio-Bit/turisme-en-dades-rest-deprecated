@@ -2,6 +2,8 @@ const { MongoClient } = require('mongodb')
 const { mongodbUri, db } = require('./server.config')
 const collection = 'users_col'
 
+const user = { username: '...', password: '...', isAdmin: true }
+
 MongoClient.connect(mongodbUri, { useUnifiedTopology: true })
   .then(client => {
     createUser(client)
@@ -12,8 +14,6 @@ MongoClient.connect(mongodbUri, { useUnifiedTopology: true })
   })
 
 const createUser = (mongoClient) => {
-  const user = { username: '...', password: '...', isAdmin: true }
-
   mongoClient.db(db).collection(collection).insertOne(user)
   .then(result => {
     console.log(`\nUser inserted in MongoDB (collection: ${db}.${collection}) with _id:`, result.insertedId, `\n`)
