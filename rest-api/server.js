@@ -80,12 +80,8 @@ const createApp = (mongoClient) => {
     (req, res, next) => {
       const { redisValue } = res.locals
       if (redisValue) {
-        if (redisValue.length > 0) {
-          if (isDevelopment) console.log('Sending cached results from Redis ...')
-          res.status(200).json(redisValue)
-        } else {
-          next()
-        }
+        if (isDevelopment) console.log('Sending cached results from Redis ...')
+        res.status(200).json(redisValue)
       } else {
         next()  // Key not found, proceeding to search in MongoDB...
       }
