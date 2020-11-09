@@ -70,7 +70,7 @@ Users are authenticated through the login endpoint in order to generate a signed
 ### 3. Run
 
 ```bash
-node ./rest-api/server.js
+node ./rest-api/server_turisme-en-dades.js
 ```
 
 ### 4. Endpoints

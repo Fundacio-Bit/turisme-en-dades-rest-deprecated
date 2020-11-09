@@ -34,7 +34,7 @@ const createApp = (mongoClient) => {
   app.use(cors())
 
   app.get('/', (req, res) => {
-    res.status(200).json({ documentation: `https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/README.md` })
+    res.status(200).json({ documentation: `https://github.com/Fundacio-Bit/turisme-en-dades-rest/blob/master/README.md` })
   })
 
   // Login
