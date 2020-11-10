@@ -1,8 +1,27 @@
+const { program } = require('commander')
 const { MongoClient } = require('mongodb')
 const { mongodbUri, db } = require('./server.config')
 const collection = 'users_col'
 
-const user = { username: '...', password: '...', isAdmin: true }
+program
+  .version('1.0.0')
+  .requiredOption('-u, --username <username>', 'User name (String)')
+  .requiredOption('-p, --password <password>', 'User password (String)')
+  .option('-a, --is-admin', 'User has role of administrator')
+
+program.parse(process.argv)
+
+let { username, password } = program
+const user = { username, password }
+
+if (program.isAdmin) user.isAdmin = true
+
+if (password.length < 6 || password.length > 20) {
+  console.log(`Error: 'password' must have a length between 6 and 20 chars.`)
+  process.exit(1)
+}
+
+console.log('User:', user)
 
 MongoClient.connect(mongodbUri, { useUnifiedTopology: true })
   .then(client => {

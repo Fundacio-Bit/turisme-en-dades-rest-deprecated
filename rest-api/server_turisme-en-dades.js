@@ -1,5 +1,6 @@
 const dotenv = require('dotenv')
 dotenv.config()
+const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
@@ -33,9 +34,15 @@ const createApp = (mongoClient) => {
   app.use(bodyParser.json())
   app.use(cors())
 
+  app.use(express.static(path.join(__dirname, 'build')))
+
   app.get('/', (req, res) => {
-    res.status(200).json({ documentation: `https://github.com/Fundacio-Bit/turisme-en-dades-rest/blob/master/README.md` })
+    res.sendFile(path.join(__dirname, 'build', 'index.html'))
   })
+
+  // app.get('/', (req, res) => {
+  //   res.status(200).json({ documentation: `https://github.com/Fundacio-Bit/turisme-en-dades-rest/blob/master/README.md` })
+  // })
 
   // Login
   // ------
