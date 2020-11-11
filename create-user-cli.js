@@ -5,9 +5,9 @@ const collection = 'users_col'
 
 program
   .version('1.0.0')
-  .requiredOption('-u, --username <username>', 'User name (String)')
-  .requiredOption('-p, --password <password>', 'User password (String)')
-  .option('-a, --is-admin', 'User has role of administrator')
+  .requiredOption('-u, --username <username>', 'user name')
+  .requiredOption('-p, --password <password>', 'user password')
+  .option('-a, --is-admin', 'user has role of administrator')
 
 program.parse(process.argv)
 
