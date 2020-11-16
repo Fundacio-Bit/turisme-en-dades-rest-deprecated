@@ -59,7 +59,7 @@ const createApp = (mongoClient) => {
         throw new AuthenticationError(`Invalid credentials for user: ${req.body.username}`)
       }
     },
-    signJWT({ payload: (req) => ({ ...req.authenticatedUser }), secret, signOptions: { expiresIn: '24h' } }),
+    signJWT({ payload: (req) => ({ ...req.authenticatedUser }), secret, signOptions: {} }),
     (req, res) => { res.status(200).json({ token: req.token }) }
   )
 
