@@ -76,10 +76,10 @@ node server.js
 | GET | / | REST API documentation |||
 | POST | /login | User authentication to generate a JWT |[loginSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/loginSchema.js)||
 | GET | /data-grids/summary | Read summary of data grids || Yes |
-| POST | /data-grids | Create data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js)| Yes |
+| POST | /data-grids | Create data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js)| Yes (admin) |
 | GET | /data-grids/:id | Read data grid || Yes |
-| PATCH | /data-grids/:id | Update data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js) (without `required` field)| Yes |
-| DELETE | /data-grids/:id | Delete data grid || Yes |
+| PATCH | /data-grids/:id | Update data grid |[dataGridSchema](https://github.com/Fundacio-Bit/turisme-en-dades/blob/master/rest-api/schemas/dataGridSchema.js) (without `required` field)| Yes (admin) |
+| DELETE | /data-grids/:id | Delete data grid || Yes (admin) |
 
 (*) Pass as a bearer token in an authorization header ( `Authorization: Bearer AbCdEf123456` ).
 
