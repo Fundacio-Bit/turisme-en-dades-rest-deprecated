@@ -61,7 +61,7 @@ Create a user with the command line program `create-user-cli.js`. This program i
 node create-user-cli.js -u <username> -p <password> -a
 ```
 
-Users are used to generate signed JSON Web Tokens through the login endpoint. JWT tokens will be passed to endpoint invocations as bearer tokens in authorization headers. Only administrator users can perform POST, PATCH and DELETE operations on the REST.
+Users are used to generate signed JSON Web Tokens (JWT) through the login endpoint. JWT tokens will be passed to endpoint invocations as bearer tokens in authorization headers. Only administrator users can perform POST, PATCH and DELETE operations on the REST.
 
 ### 3. Run
 
