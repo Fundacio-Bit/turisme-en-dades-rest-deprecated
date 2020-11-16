@@ -55,7 +55,7 @@ port: 3000
 
 #### Create an administrator user
 
-Create a user with the command line program `create-user-cli.js`. This program inserts a user's entry in the MongoDB collection `users_col` (in the previously specified database in `server.config.js`). If you specify `-a` (or `--is-admin`) option, then a user with the role of administrator will be created.
+Create a user with the command line program `create-user-cli.js`. This program inserts a new user entry in the MongoDB collection `users_col` (in the previously specified database in `server.config.js`). If you specify `-a` (or `--is-admin`) option, then a user with the role of administrator will be created.
 
 ```js
 node create-user-cli.js -u <username> -p <password> -a
