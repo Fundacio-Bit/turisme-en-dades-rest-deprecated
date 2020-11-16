@@ -7,7 +7,7 @@ program
   .version('1.0.0')
   .requiredOption('-u, --username <username>', 'user name')
   .requiredOption('-p, --password <password>', 'user password')
-  .option('-a, --is-admin', 'user has role of administrator')
+  .option('-a, --is-admin', 'user has role of administrator (optional)')
 
 program.parse(process.argv)
 
