@@ -88,7 +88,7 @@ node server.js
 To generate a JWT token you can use `curl` and pass the user credentials to the login endpoint:
 
 ```bash
-curl -X POST -d "{\"username\":\"...\",\"password\":\"...\"}" -H "Content-Type: application/json" http://localhost:3000/login
+curl -X POST -d "{\"username\":\"<username>\",\"password\":\"<password>\"}" -H "Content-Type: application/json" http://localhost:3000/login
 ```
 
 To invoke CRUD endpoints you can use the generated JWT and pass it as a Bearer token in an authorization header:
