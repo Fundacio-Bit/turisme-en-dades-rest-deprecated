@@ -53,19 +53,15 @@ expiration: 600,  // Number of seconds of expiraton time for Redis caches
 port: 3000
 ```
 
-#### Create a collection of users in MongoDB
+#### Create an administrator user
 
-Create a collection in MongoDB named `users_col` (in the previously specified database in `server.config.js`), and insert a doc in the collection with the following format:
+Create a user with the command line program `create-user-cli.js`. This program inserts a user's entry in the MongoDB collection `users_col` (in the previously specified database in `server.config.js`). If you specify `-a` (or `--is-admin`) option, then a user with the role of administrator will be created.
 
 ```js
-{
-    "username" : "<username>",
-    "password" : "<password>",
-    "isAdmin": [true|false]
-}
+node create-user-cli.js -u <username> -p <password> -a
 ```
 
-Users are authenticated through the login endpoint in order to generate a signed JSON Web Token. JWT tokens will be passed to endpoint invocations as bearer tokens in authorization headers. Only admin users ( `isAdmin=true` ) can perform POST, PATCH and DELETE operations.
+Users are used to generate signed JSON Web Tokens through the login endpoint. JWT tokens will be passed to endpoint invocations as bearer tokens in authorization headers. Only administrator users can perform POST, PATCH and DELETE operations on the REST.
 
 ### 3. Run
 
@@ -112,7 +108,7 @@ docker build -t <image_name> .
 To run the image in a container:
 
 ```bash
-docker run -d -p <public_port>:<private_port> <image_name>
+docker run -d -p <public_port>:<private_port> --name <container_name> <image_name>
 ```
 
 Where the private port must be the same as the one defined in the `server.config.js` properties file.
