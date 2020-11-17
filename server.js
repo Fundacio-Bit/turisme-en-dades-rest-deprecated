@@ -11,6 +11,7 @@ const { redisGet, redisSet, redisDel, mongoFind, mongoFindOne, mongoInsertOne, m
 const { mongodbUri, db, collection, redisHost, redisDBindex, expiration, port } = require('./server.config')
 const { dataGridSchema, loginSchema } = require('./schemas/')
 const { AuthenticationError } = require('./errors/')
+const { verifyHashedPassword } = require('./auth')
 
 const secret = process.env.SECRET_KEY
 const isDevelopment = process.env.NODE_ENV === 'development'
@@ -48,15 +49,25 @@ const createApp = (mongoClient) => {
   // ------
   app.post('/login',
     validateJsonSchema({ schema: loginSchema, instanceToValidate: (req) => req.body }),
-    mongoFindOne({ mongoClient, db, collection: 'users_col', query: (req) => ({ username: req.body.username, password: req.body.password }), responseProperty: 'user' }),
+    mongoFindOne({ mongoClient, db, collection: 'users_col', query: (req) => ({ username: req.body.username }), responseProperty: 'user' }),
     (req, res, next) => {
       const { user } = res.locals
       if (user) {
-        req.authenticatedUser = { username: user.username }
-        if (user.isAdmin) req.authenticatedUser.isAdmin = user.isAdmin
-        next()
+        verifyHashedPassword(req.body.password, user.password)
+          .then(verified => {
+            if (verified) {
+              req.authenticatedUser = { username: user.username }
+              if (user.isAdmin) req.authenticatedUser.isAdmin = user.isAdmin
+              next()
+            } else {
+              next(new AuthenticationError('Invalid password'))
+            }
+          })
+          .catch(err => {
+            next(err)
+          })
       } else {
-        throw new AuthenticationError(`Invalid credentials for user: ${req.body.username}`)
+        throw new AuthenticationError(`Unknown user: ${req.body.username}`)
       }
     },
     signJWT({ payload: (req) => ({ ...req.authenticatedUser }), secret, signOptions: {} }),
