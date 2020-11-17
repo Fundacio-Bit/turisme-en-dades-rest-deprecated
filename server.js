@@ -9,9 +9,8 @@ const { MongoClient, ObjectID } = require('mongodb')
 const { validateJsonSchema, signJWT, verifyJWT } = require('@fundaciobit/express-middleware')
 const { redisGet, redisSet, redisDel, mongoFind, mongoFindOne, mongoInsertOne, mongoUpdateOne, mongoDeleteOne } = require('@fundaciobit/express-redis-mongo')
 const { mongodbUri, db, collection, redisHost, redisDBindex, expiration, port } = require('./server.config')
+const { AuthenticationError, verifyHashedPassword } = require('./auth')
 const { dataGridSchema, loginSchema } = require('./schemas/')
-const { AuthenticationError } = require('./errors/')
-const { verifyHashedPassword } = require('./auth')
 
 const secret = process.env.SECRET_KEY
 const isDevelopment = process.env.NODE_ENV === 'development'
