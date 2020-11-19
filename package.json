@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "docker-build": "docker build -t turisme-en-dades-rest .",
+    "docker-run": "docker run -d -p 3000:3000 --name myrest turisme-en-dades-rest"
   },
   "keywords": [],
   "author": "",

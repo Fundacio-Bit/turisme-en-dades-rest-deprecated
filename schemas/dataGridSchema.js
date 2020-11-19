@@ -17,7 +17,7 @@ module.exports = {
   properties: {
     title: { $ref: '#/definitions/translation' },
     section: { type: 'string' },
-    month: { type: 'string' },
+    month: { type: 'string', pattern: '^\\d\\d\\d\\d-\\d\\d$' },
     description: { $ref: '#/definitions/translation' },
     columns: {
       type: 'array',
