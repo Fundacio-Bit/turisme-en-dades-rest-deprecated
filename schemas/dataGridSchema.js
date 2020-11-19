@@ -16,6 +16,8 @@ module.exports = {
   type: 'object',
   properties: {
     title: { $ref: '#/definitions/translation' },
+    section: { type: 'string' },
+    month: { type: 'string' },
     description: { $ref: '#/definitions/translation' },
     columns: {
       type: 'array',
@@ -35,11 +37,11 @@ module.exports = {
         required: ['name', 'values']
       }
     },
-    notes: {
+    footer: {
       type: 'array',
       items: { $ref: '#/definitions/translation' }
     }
   },
-  required: ['title', 'columns', 'rows'],
+  required: ['title', 'section', 'month', 'columns', 'rows'],
   additionalProperties: false
 }

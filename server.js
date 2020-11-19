@@ -103,7 +103,7 @@ const createApp = (mongoClient) => {
         next()  // Key not found, proceeding to search in MongoDB...
       }
     },
-    mongoFind({ mongoClient, db, collection, query: (req) => ({}), projection: { title: 1 } }),
+    mongoFind({ mongoClient, db, collection, query: (req) => ({}), projection: { title: 1, section: 1, month: 1 } }),
     redisSet({ client, key: (req) => `/data-grids/summary`, value: (req, res) => JSON.stringify(res.locals.results), expiration }),
     (req, res) => {
       if (isDevelopment) console.log(' ... inserted MongoDB results in Redis')
