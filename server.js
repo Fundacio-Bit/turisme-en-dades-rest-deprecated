@@ -110,6 +110,27 @@ const createApp = (mongoClient) => {
       res.status(200).json(res.locals.results)
     })
 
+  // READ summary of data grids
+  // ---------------------------
+  app.get('/data-grids/month/:month',
+    redisGet({ client, key: (req) => `/data-grids/month/${req.params.month}`, parseResults: true }),
+    (req, res, next) => {
+      const { redisValue } = res.locals
+      if (redisValue) {
+        if (isDevelopment) console.log('Sending cached results from Redis ...')
+        res.status(200).json(redisValue)
+      } else {
+        next()  // Key not found, proceeding to search in MongoDB...
+      }
+    },
+    mongoFind({ mongoClient, db, collection, query: (req) => ({ month: req.params.month }), projection: {} }),
+    redisSet({ client, key: (req) => `/data-grids/month/${req.params.month}`, value: (req, res) => JSON.stringify(res.locals.results), expiration }),
+    (req, res) => {
+      if (isDevelopment) console.log(' ... inserted MongoDB results in Redis')
+      res.status(200).json(res.locals.results)
+    })
+
+
   // READ data grid BY id
   // ---------------------
   app.get('/data-grids/:id',
