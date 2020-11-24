@@ -16,6 +16,7 @@ module.exports = {
   type: 'object',
   properties: {
     title: { $ref: '#/definitions/translation' },
+    chart_id: { type: 'string' },
     section: { type: 'string' },
     month: { type: 'string', pattern: '^\\d\\d\\d\\d-\\d\\d$' },
     description: { $ref: '#/definitions/translation' },
@@ -42,6 +43,6 @@ module.exports = {
       items: { $ref: '#/definitions/translation' }
     }
   },
-  required: ['title', 'section', 'month', 'columns', 'rows'],
+  required: ['title', 'chart_id', 'section', 'month', 'columns', 'rows'],
   additionalProperties: false
 }
