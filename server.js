@@ -7,10 +7,10 @@ const cors = require('cors')
 const redis = require('redis')
 const { MongoClient, ObjectID } = require('mongodb')
 const { validateJsonSchema, signJWT, verifyJWT } = require('@fundaciobit/express-middleware')
-const { redisGet, redisSet, redisDel, mongoFind, mongoFindOne, mongoInsertOne, mongoUpdateOne, mongoDeleteOne } = require('@fundaciobit/express-redis-mongo')
+const { redisGet, redisSet, redisDel, mongoFind, mongoFindOne, mongoInsertOne, mongoUpdateOne, mongoDeleteOne, mongoCreateIndex } = require('@fundaciobit/express-redis-mongo')
 const { mongodbUri, db, collection, redisHost, redisDBindex, expiration, port } = require('./server.config')
 const { AuthenticationError, verifyHashedPassword } = require('./auth')
-const { dataGridSchema, loginSchema } = require('./schemas/')
+const { dataGridSchema, loginSchema } = require('./schemas')
 
 const secret = process.env.SECRET_KEY
 const isDevelopment = process.env.NODE_ENV === 'development'
@@ -86,6 +86,7 @@ const createApp = (mongoClient) => {
     },
     validateJsonSchema({ schema: dataGridSchema, instanceToValidate: (req) => req.body }),
     mongoInsertOne({ mongoClient, db, collection, docToInsert: (req, res) => req.body }),
+    mongoCreateIndex({ mongoClient, db, collection, keys: { chart_id: 1 }, options: { sparse: true, unique: true } }),
     redisDel({ client, key: (req) => `/data-grids/summary` }),
     (req, res) => { res.status(200).json({ _id: res.locals.insertedId }) }
   )
