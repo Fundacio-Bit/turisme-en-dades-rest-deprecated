@@ -3,23 +3,31 @@ dotenv.config()
 const { program } = require('commander')
 const { MongoClient } = require('mongodb')
 const { mongodbUri, db } = require('./server.config')
-const crypto = require('crypto')
+// const crypto = require('crypto')
+const bcrypt = require('bcryptjs')
+
 const collection = 'users_col'
 
-// Function to hash a password with a key derivation function (KDF)
-// If node version is >= 10 then it is used Scrypt as KDF, else it is used PBKDF2 (because Scrypt is not supported in earlier versions of node)
+// // Function to hash a password with a key derivation function (KDF)
+// // If node version is >= 10 then it is used Scrypt as KDF, else it is used PBKDF2 (because Scrypt is not supported in earlier versions of node)
+// const hashPassword = (password) => {
+//   const nodeVersion = process.version.split('.')[0].replace('v', '')
+
+//   const kdf = (parseInt(nodeVersion) >= 10) ? 'scrypt' : 'pbkdf2'
+
+//   const salt = crypto.randomBytes(16).toString('hex')
+
+//   const derivedKey = (kdf === 'scrypt')
+//     ? crypto.scryptSync(password, salt, 64).toString('hex')
+//     : crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex')
+
+//   return `${salt}:${derivedKey}:${kdf}`  // this will be the password stored in MongoDB
+// }
+
 const hashPassword = (password) => {
-  const nodeVersion = process.version.split('.')[0].replace('v', '')
-
-  const kdf = (parseInt(nodeVersion) >= 10) ? 'scrypt' : 'pbkdf2'
-
-  const salt = crypto.randomBytes(16).toString('hex')
-
-  const derivedKey = (kdf === 'scrypt')
-    ? crypto.scryptSync(password, salt, 64).toString('hex')
-    : crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex')
-
-  return `${salt}:${derivedKey}:${kdf}`  // this will be the password stored in MongoDB
+  const salt = bcrypt.genSaltSync(10)
+  const hash = bcrypt.hashSync(password, salt)
+  return hash
 }
 
 program
